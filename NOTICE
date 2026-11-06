@@ -1,0 +1,22 @@
+# web-search-logent 안내
+
+이 저장소는 Logent의 `web_search` 도구를 독립 `.lpg` 플러그인으로 제공해요.
+원본 오픈소스 저장소를 포크한 것이 아니라 Logent용으로 새로 작성한 코드예요.
+따라서 `README.upstream.md`나 upstream 커밋 고지는 없어요.
+
+- 플러그인 id: `dev.logent.web-search`
+- 도구: `web_search`
+- 진입점: `dev.logent.websearch.WebSearchPlugin`
+- 공개 API: `dev.logent:logent-plugin-api:3.3.0`
+  (`https://maven.pkg.github.com/logentworld/plugin`, commit `2423779b3704a611e3f6359ced090215c97db000`)
+- 라이선스: GNU General Public License v3.0 (`plugin/LICENSE`)
+
+## 의존성
+
+- Kotlin 표준 라이브러리, `kotlinx-coroutines-core`, `kotlinx-serialization-json`은
+  Maven 의존성으로만 받고 소스나 바이너리를 이 저장소에 포함하지 않아요.
+  각각 Apache License 2.0을 따라요.
+- Brave Search API·DuckDuckGo HTML·Jina Reader·Bing Search는 공개 HTTP 엔드포인트로만
+  호출해요. 해당 서비스의 코드나 데이터는 이 저장소에 포함하지 않아요.
+- 검색 HTML/Markdown 파서와 URL 정규화는 Logent 코어의 동작을 옮겨 이 저장소에서
+  새로 작성한 코드이며, 외부 파서 라이브러리를 쓰지 않아요.
