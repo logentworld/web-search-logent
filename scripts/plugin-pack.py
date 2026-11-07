@@ -383,12 +383,16 @@ def find_d8(explicit):
         return path, root
     for root in sdk_roots():
         build_tools = root / "build-tools"
-        if not build_tools.is_dir():
+        try:
+            if not build_tools.is_dir():
+                continue
+            versions = sorted(
+                (entry for entry in build_tools.iterdir() if entry.is_dir()),
+                key=build_tools_key, reverse=True,
+            )
+        except OSError:
+            # GitHub 러너처럼 접근 권한이 없는 SDK 후보는 건너뛰어요.
             continue
-        versions = sorted(
-            (entry for entry in build_tools.iterdir() if entry.is_dir()),
-            key=build_tools_key, reverse=True,
-        )
         for version in versions:
             candidate = version / "d8"
             if candidate.is_file() and os.access(candidate, os.X_OK):
@@ -435,11 +439,19 @@ def find_android_jar(sdk_root):
     best_key = None
     for root in roots:
         platforms = root / "platforms"
-        if not platforms.is_dir():
+        try:
+            if not platforms.is_dir():
+                continue
+            directories = list(platforms.iterdir())
+        except OSError:
+            # 접근 권한이 없는 SDK 후보는 건너뛰어요.
             continue
-        for directory in platforms.iterdir():
+        for directory in directories:
             jar = directory / "android.jar"
-            if not directory.is_dir() or not jar.is_file():
+            try:
+                if not directory.is_dir() or not jar.is_file():
+                    continue
+            except OSError:
                 continue
             suffix = directory.name.rsplit("-", 1)[-1]
             key = int(suffix) if suffix.isdigit() else -1
