@@ -4,10 +4,10 @@
 원본 오픈소스 저장소를 포크한 것이 아니라 Logent용으로 새로 작성한 코드예요.
 따라서 `README.upstream.md`나 upstream 커밋 고지는 없어요.
 
-- 플러그인 id: `dev.logent.web-search`
+- 플러그인 id: `com.sleepysoong.logent.web-search`
 - 도구: `web_search`
-- 진입점: `dev.logent.websearch.WebSearchPlugin`
-- 공개 API: `dev.logent:logent-plugin-api:3.3.0`
+- 진입점: `com.sleepysoong.logent.websearch.WebSearchPlugin`
+- 공개 API: `com.sleepysoong.logent:logent-plugin-api:3.3.0`
   (`https://maven.pkg.github.com/logentworld/plugin`, commit `2423779b3704a611e3f6359ced090215c97db000`)
 - 라이선스: GNU General Public License v3.0 (`plugin/LICENSE`)
 

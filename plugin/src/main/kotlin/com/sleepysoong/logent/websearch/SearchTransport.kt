@@ -1,7 +1,7 @@
-package dev.logent.websearch
+package com.sleepysoong.logent.websearch
 
-import dev.logent.plugin.PluginHost
-import dev.logent.plugin.PluginHttpRequest
+import com.sleepysoong.logent.plugin.PluginHost
+import com.sleepysoong.logent.plugin.PluginHttpRequest
 
 /** 플러그인 HTTP 응답 중 검색에 필요한 값만 담아요. */
 internal data class SearchHttpResponse(

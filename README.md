@@ -5,9 +5,9 @@ Brave Search API → DuckDuckGo HTML → Jina DuckDuckGo lite → Bing 순으로
 제목·URL·요약을 같은 형식으로 돌려줘요.
 
 - 저장소: <https://github.com/logentworld/web-search-logent> (`logent` 브랜치)
-- 플러그인 id: `dev.logent.web-search`
+- 플러그인 id: `com.sleepysoong.logent.web-search`
 - 도구 이름: `web_search`
-- 공개 API: `dev.logent:logent-plugin-api:3.3.0`
+- 공개 API: `com.sleepysoong.logent:logent-plugin-api:4.0.0`
 
 ## 설치
 

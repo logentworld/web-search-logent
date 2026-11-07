@@ -1,9 +1,9 @@
-package dev.logent.websearch
+package com.sleepysoong.logent.websearch
 
-import dev.logent.plugin.PluginContext
-import dev.logent.plugin.PluginHttpResponse
-import dev.logent.plugin.PluginSettingKind
-import dev.logent.plugin.ToolAccess
+import com.sleepysoong.logent.plugin.PluginContext
+import com.sleepysoong.logent.plugin.PluginHttpResponse
+import com.sleepysoong.logent.plugin.PluginSettingKind
+import com.sleepysoong.logent.plugin.ToolAccess
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject

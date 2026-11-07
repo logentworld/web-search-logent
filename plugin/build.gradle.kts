@@ -14,7 +14,7 @@ val apiPin = Properties().apply {
 }
 
 android {
-    namespace = "dev.logent.websearch"
+    namespace = "com.sleepysoong.logent.websearch"
     compileSdk = 37
 
     defaultConfig {
