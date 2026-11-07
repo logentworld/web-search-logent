@@ -1,0 +1,92 @@
+name: 커밋마다 .lpg 빌드
+
+on:
+  push:
+    branches: [main, logent]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: read
+
+concurrency:
+  group: plugin-edge-${{ github.repository }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_ACTOR: ${{ github.actor }}
+      GITHUB_TOKEN: ${{ secrets.LOGENT_PLUGIN_API_TOKEN || github.token }}
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: android-actions/setup-android@v3
+      - name: Android SDK를 설치해요
+        run: sdkmanager 'platforms;android-37' 'build-tools;37.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: 테스트와 lint를 실행해요
+        run: ./scripts/test.sh
+      - name: 서명 키를 준비해요
+        id: signing
+        env:
+          CONTENT_SIGNING_KEY: ${{ secrets.LOGENT_CONTENT_SIGNING_KEY }}
+        run: |
+          set -euo pipefail
+          key="$RUNNER_TEMP/plugin-signing.pem"
+          public="$RUNNER_TEMP/plugin-signing-public.der"
+          umask 077
+          if [[ -n "${CONTENT_SIGNING_KEY:-}" ]]; then
+            printf '%s\n' "$CONTENT_SIGNING_KEY" > "$key"
+            echo 'signed=true' >> "$GITHUB_OUTPUT"
+          else
+            openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 \
+              -pkeyopt ec_param_enc:named_curve -out "$key"
+            echo 'signed=false' >> "$GITHUB_OUTPUT"
+          fi
+          openssl ec -in "$key" -pubout -outform DER -conv_form uncompressed \
+            -param_enc named_curve -out "$public" 2>/dev/null
+          echo "key=$key" >> "$GITHUB_OUTPUT"
+          echo "public=$public" >> "$GITHUB_OUTPUT"
+      - name: 서명된 .lpg를 빌드해요
+        env:
+          LOGENT_PLUGIN_SIGNING_KEY_FILE: ${{ steps.signing.outputs.key }}
+          LOGENT_CONTENT_SIGNING_KEY_FILE: ${{ steps.signing.outputs.key }}
+          LOGENT_PLUGIN_PUBLIC_KEY_FILE: ${{ steps.signing.outputs.public }}
+        run: ./scripts/build.sh
+      - name: edge 릴리스에 .lpg를 올려요
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SIGNED: ${{ steps.signing.outputs.signed }}
+          COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          assets=(build/dist/*.lpg)
+          [[ ${#assets[@]} -gt 0 ]] || { echo '.lpg가 없어요.' >&2; exit 1; }
+          if [[ "$SIGNED" != true ]]; then
+            for asset in "${assets[@]}"; do mv "$asset" "${asset%.lpg}-ci.lpg"; done
+            assets=(build/dist/*.lpg)
+          fi
+          sha256sum "${assets[@]}" > build/dist/SHA256SUMS.edge
+          if ! gh release view edge >/dev/null 2>&1; then
+            gh release create edge --prerelease --title 'Edge build' --notes '커밋마다 만드는 최신 .lpg예요.'
+          fi
+          gh release upload edge "${assets[@]}" build/dist/SHA256SUMS.edge --clobber
+          if [[ "$SIGNED" == true ]]; then
+            note='운영 서명 키로 서명했어요. 앱에 설치할 수 있어요.'
+          else
+            note='CI 테스트 서명이라 앱에 설치할 수 없어요. LOGENT_CONTENT_SIGNING_KEY를 설정하면 설치 가능한 패키지로 바뀌어요.'
+          fi
+          gh release edit edge --prerelease --notes "커밋 ${COMMIT:0:7}의 .lpg예요. $note"
