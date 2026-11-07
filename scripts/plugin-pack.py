@@ -71,9 +71,10 @@ def openssl(*arguments, data=None, pass_fds=()):
 
 
 def fingerprint(metadata):
+    # ctime은 chmod로도 바뀌어 동시 패키징에서 오탐이 나요.
     return (
         metadata.st_dev, metadata.st_ino, metadata.st_mode, metadata.st_size,
-        metadata.st_mtime_ns, metadata.st_ctime_ns,
+        metadata.st_mtime_ns,
     )
 
 
@@ -820,8 +821,8 @@ def parser():
     package.add_argument("--key", required=True, help="Git checkout 밖의 PEM 개인키를 지정해 주세요.")
     package.add_argument("--public-key", required=True, help="개인키와 일치해야 하는 DER SPKI 공개키를 지정해 주세요.")
     package.add_argument("--output", required=True, help="완성된 .lpg 출력 경로를 지정해 주세요. 실패하면 기존 파일을 보존해요.")
-    package.add_argument("--api-min", type=int, default=3, help="최소 플러그인 API 버전이에요. 기본값은 3이에요.")
-    package.add_argument("--api-max", type=int, default=3, help="최대 플러그인 API 버전이에요. 기본값은 3이에요.")
+    package.add_argument("--api-min", type=int, default=4, help="최소 플러그인 API 버전이에요. 기본값은 4이에요.")
+    package.add_argument("--api-max", type=int, default=4, help="최대 플러그인 API 버전이에요. 기본값은 4이에요.")
     package.add_argument("--min-api", type=int, default=26, help="D8 Android min API예요. 기본값은 26이에요.")
     package.add_argument("--d8", help="Android SDK build-tools의 d8 실행 파일을 직접 지정해 주세요.")
     package.add_argument("--java", help="D8을 실행할 Java 실행 파일을 직접 지정해 주세요.")

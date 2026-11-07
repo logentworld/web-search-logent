@@ -1,17 +1,17 @@
-package dev.logent.websearch
+package com.sleepysoong.logent.websearch
 
-import dev.logent.plugin.LogentPlugin
-import dev.logent.plugin.PluginHost
-import dev.logent.plugin.PluginSetting
-import dev.logent.plugin.PluginSettingKind
-import dev.logent.plugin.PluginTool
-import dev.logent.plugin.ToolAccess
-import dev.logent.plugin.ToolResult
-import dev.logent.plugin.integer
-import dev.logent.plugin.integerProperty
-import dev.logent.plugin.stringProperty
-import dev.logent.plugin.text
-import dev.logent.plugin.toolSpec
+import com.sleepysoong.logent.plugin.LogentPlugin
+import com.sleepysoong.logent.plugin.PluginHost
+import com.sleepysoong.logent.plugin.PluginSetting
+import com.sleepysoong.logent.plugin.PluginSettingKind
+import com.sleepysoong.logent.plugin.PluginTool
+import com.sleepysoong.logent.plugin.ToolAccess
+import com.sleepysoong.logent.plugin.ToolResult
+import com.sleepysoong.logent.plugin.integer
+import com.sleepysoong.logent.plugin.integerProperty
+import com.sleepysoong.logent.plugin.stringProperty
+import com.sleepysoong.logent.plugin.text
+import com.sleepysoong.logent.plugin.toolSpec
 import kotlinx.serialization.json.JsonObject
 
 /**
@@ -22,10 +22,10 @@ import kotlinx.serialization.json.JsonObject
  * 호출 시점에 읽으므로 키를 바꾸면 다음 검색부터 바로 반영돼요.
  */
 class WebSearchPlugin : LogentPlugin {
-    override val id: String = "dev.logent.web-search"
+    override val id: String = "com.sleepysoong.logent.web-search"
     override val name: String = "Web Search"
     override val version: String = BuildConfig.PLUGIN_VERSION
-    override val apiVersion: Int = 3
+    override val apiVersion: Int = 4
 
     @Volatile
     private var host: PluginHost? = null

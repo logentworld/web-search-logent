@@ -1,14 +1,14 @@
-package dev.logent.websearch
+package com.sleepysoong.logent.websearch
 
-import dev.logent.plugin.PluginHost
-import dev.logent.plugin.PluginHttpRequest
-import dev.logent.plugin.PluginHttpResponse
-import dev.logent.plugin.ProcessResult
+import com.sleepysoong.logent.plugin.PluginHost
+import com.sleepysoong.logent.plugin.PluginHttpRequest
+import com.sleepysoong.logent.plugin.PluginHttpResponse
+import com.sleepysoong.logent.plugin.ProcessResult
 
 /** 플러그인 호스트를 흉내 내 설정·HTTP 요청을 검사해요. */
 internal class FakePluginHost(
     override val appVersion: String = "0.0.0-test",
-    override val apkPath: String = "/data/app/~~test/dev.logent-1/base.apk",
+    override val apkPath: String = "/data/app/~~test/com.sleepysoong.logent-1/base.apk",
     val settings: MutableMap<String, String> = mutableMapOf(),
 ) : PluginHost {
     val requests = mutableListOf<PluginHttpRequest>()

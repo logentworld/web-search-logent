@@ -1,4 +1,4 @@
-package dev.logent.websearch
+package com.sleepysoong.logent.websearch
 
 import kotlinx.coroutines.runBlocking
 

@@ -1,4 +1,4 @@
-package dev.logent.websearch
+package com.sleepysoong.logent.websearch
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
