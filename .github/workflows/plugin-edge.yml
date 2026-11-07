@@ -3,6 +3,7 @@ name: 커밋마다 .lpg 빌드
 on:
   push:
     branches: [main, logent]
+    tags: ['v*']
   workflow_dispatch:
 
 permissions:
@@ -81,6 +82,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           SIGNED: ${{ steps.signing.outputs.signed }}
           COMMIT: ${{ github.sha }}
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
         run: |
           set -euo pipefail
           shopt -s nullglob
@@ -91,13 +94,25 @@ jobs:
             assets=(build/dist/*.lpg)
           fi
           sha256sum "${assets[@]}" > build/dist/SHA256SUMS.edge
-          if ! gh release view edge >/dev/null 2>&1; then
-            gh release create edge --prerelease --title 'Edge build' --notes '커밋마다 만드는 최신 .lpg예요.'
-          fi
-          gh release upload edge "${assets[@]}" build/dist/SHA256SUMS.edge --clobber
           if [[ "$SIGNED" == true ]]; then
-            note='운영 서명 키로 서명했어요. 앱에 설치할 수 있어요.'
-          else
-            note='CI 테스트 서명이라 앱에 설치할 수 없어요. LOGENT_CONTENT_SIGNING_KEY를 설정하면 설치 가능한 패키지로 바뀌어요.'
+            while IFS= read -r stale; do
+              [[ -z "$stale" ]] || gh release delete-asset edge "$stale" -y || true
+            done < <(gh release view edge --json assets --jq '.assets[].name' 2>/dev/null | grep -- '-ci\.lpg$' || true)
           fi
-          gh release edit edge --prerelease --notes "커밋 ${COMMIT:0:7}의 .lpg예요. $note"
+          if [[ "$REF_TYPE" == "tag" ]]; then
+            release="$REF_NAME"
+            gh release view "$release" >/dev/null 2>&1 ||               gh release create "$release" --title "Logent plugin $release" --notes "태그 $release의 서명 .lpg예요."
+            gh release upload "$release" "${assets[@]}" build/dist/SHA256SUMS.edge --clobber
+            echo "태그 릴리스에 올렸어요: $release"
+          else
+            if ! gh release view edge >/dev/null 2>&1; then
+              gh release create edge --prerelease --title 'Edge build' --notes '커밋마다 만드는 최신 .lpg예요.'
+            fi
+            gh release upload edge "${assets[@]}" build/dist/SHA256SUMS.edge --clobber
+            if [[ "$SIGNED" == true ]]; then
+              note='운영 서명 키로 서명했어요. 앱에 설치할 수 있어요.'
+            else
+              note='CI 테스트 서명이라 앱에 설치할 수 없어요. LOGENT_CONTENT_SIGNING_KEY를 설정하면 설치 가능한 패키지로 바뀌어요.'
+            fi
+            gh release edit edge --prerelease --notes "커밋 ${COMMIT:0:7}의 .lpg예요. $note"
+          fi
