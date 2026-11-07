@@ -384,19 +384,16 @@ def find_d8(explicit):
     for root in sdk_roots():
         build_tools = root / "build-tools"
         try:
-            if not build_tools.is_dir():
-                continue
-            versions = sorted(
-                (entry for entry in build_tools.iterdir() if entry.is_dir()),
-                key=build_tools_key, reverse=True,
-            )
-        except OSError:
-            # GitHub 러너처럼 접근 권한이 없는 SDK 후보는 건너뛰어요.
+            versions = sorted(build_tools.iterdir(), key=build_tools_key, reverse=True)
+        except (FileNotFoundError, NotADirectoryError, PermissionError):
             continue
         for version in versions:
             candidate = version / "d8"
-            if candidate.is_file() and os.access(candidate, os.X_OK):
-                return candidate, root
+            try:
+                if version.is_dir() and candidate.is_file() and os.access(candidate, os.X_OK):
+                    return candidate, root
+            except PermissionError:
+                continue
     found = shutil.which("d8")
     if found:
         return Path(found).resolve(), None
@@ -440,18 +437,15 @@ def find_android_jar(sdk_root):
     for root in roots:
         platforms = root / "platforms"
         try:
-            if not platforms.is_dir():
-                continue
             directories = list(platforms.iterdir())
-        except OSError:
-            # 접근 권한이 없는 SDK 후보는 건너뛰어요.
+        except (FileNotFoundError, NotADirectoryError, PermissionError):
             continue
         for directory in directories:
             jar = directory / "android.jar"
             try:
-                if not directory.is_dir() or not jar.is_file():
+                if not directory.is_dir() or not jar.is_file() or not os.access(jar, os.R_OK):
                     continue
-            except OSError:
+            except PermissionError:
                 continue
             suffix = directory.name.rsplit("-", 1)[-1]
             key = int(suffix) if suffix.isdigit() else -1
