@@ -9,9 +9,15 @@ Brave Search API → DuckDuckGo HTML → Jina DuckDuckGo lite → Bing 순으로
 - 도구 이름: `web_search`
 - 공개 API: `com.sleepysoong.logent:logent-plugin-api:4.0.0`
 
+`logent-plugin.json`을 `scripts/plugin-pack.py build --definition logent-plugin.json`의
+공통 정의로 사용해요. 플러그인 key는 `sleepysoong:web_search`, `dependencies`는 `[]`예요.
+`sleepysoong`는 명시한 publisher 별칭이며 GitHub 인증 계정이나 소유권을 뜻하지 않아요.
+key와 의존성에서 생성한 manifest의 `requires`는 서명 metadata에 포함되고,
+`content-public-key.der.b64`에 고정한 공개키로 서명과 파일 해시를 검증해요.
+
 ## 설치
 
-1. 릴리스의 `logent-web-search-v3.0.0.lpg`를 내려받아요.
+1. 릴리스의 `logent-web-search-v<VERSION>.lpg`를 내려받아요.
 2. Logent 설정 → 플러그인에서 `.lpg`를 설치하고 Web Search를 켜요.
 3. 필요하면 플러그인 상세에서 Brave Search API 키를 입력해요.
 
@@ -64,12 +70,12 @@ JAVA_HOME=/usr/lib/jvm/java-21-openjdk-arm64 \
 LOGENT_PLUGIN_SIGNING_KEY_FILE="$HOME/.local/share/logent/content-signing.pem" \
 ./scripts/build.sh
 
-# Maven artifact 대신 로컬 API 소스를 쓸 때
+# Maven 저장소에 설치한 로컬 API artifact를 쓸 때
 LOGENT_PLUGIN_SIGNING_KEY_FILE=... ./scripts/build.sh -PlogentPluginApiMavenLocal=true
 ```
 
-산출물은 `build/dist/logent-web-search-v3.0.0.lpg`와
-`build/dist/logent-web-search-v3.0.0.aar`, `SHA256SUMS`예요.
+산출물은 `build/dist/logent-web-search-v<VERSION>.lpg`와
+`build/dist/logent-web-search-v<VERSION>.aar`, `SHA256SUMS`예요.
 
 ## 보안
 

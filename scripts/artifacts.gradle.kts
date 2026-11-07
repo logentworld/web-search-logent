@@ -3,9 +3,7 @@ val repository = projectDir.parentFile
 val releaseVersion = repository.resolve("VERSION").readText().trim()
 require(Regex("[0-9]+[.][0-9]+[.][0-9]+").matches(releaseVersion)) { "VERSION은 x.y.z 형식으로 써 주세요." }
 val distribution = repository.resolve("build/dist")
-val pluginId = "com.sleepysoong.logent.web-search"
-val pluginName = "Web Search"
-val pluginEntry = "com.sleepysoong.logent.websearch.WebSearchPlugin"
+val pluginDefinition = repository.resolve("logent-plugin.json")
 val releaseAar = tasks.register<Copy>("pluginReleaseAar") {
     dependsOn("assembleRelease")
     from(layout.buildDirectory.file("outputs/aar/${project.name}-release.aar"))
@@ -32,13 +30,9 @@ val pluginPackage = tasks.register<Exec>("pluginPackage") {
             "python3",
             repository.resolve("scripts/plugin-pack.py").absolutePath,
             "build",
+            "--definition", pluginDefinition.absolutePath,
             "--aar", aar.absolutePath,
-            "--id", pluginId,
-            "--name", pluginName,
             "--version", releaseVersion,
-            "--entry", pluginEntry,
-            "--api-min", "4",
-            "--api-max", "4",
             "--key", file(key).absolutePath,
             "--public-key", publicKey.absolutePath,
             "--output", lpg.absolutePath,

@@ -7,9 +7,13 @@
 - 플러그인 id: `com.sleepysoong.logent.web-search`
 - 도구: `web_search`
 - 진입점: `com.sleepysoong.logent.websearch.WebSearchPlugin`
-- 공개 API: `com.sleepysoong.logent:logent-plugin-api:3.3.0`
-  (`https://maven.pkg.github.com/logentworld/plugin`, commit `2423779b3704a611e3f6359ced090215c97db000`)
+- 공개 API: `com.sleepysoong.logent:logent-plugin-api:4.0.0`
+  (Maven 좌표와 소스 커밋은 `plugin-api.lock`에 고정해요.)
 - 라이선스: GNU General Public License v3.0 (`plugin/LICENSE`)
+- `logent-plugin.json`을 공통 패키징 정의로 사용하고 `sleepysoong:web_search` key와 빈
+  `dependencies`를 선언했어요. publisher는 GitHub 인증과 별개인 명시적 별칭이에요.
+  manifest의 key·빈 `requires`를 서명 metadata에 포함해 고정 공개키와 파일 해시로
+  검증해요. Kotlin HTTP 호출과 도구 동작은 바꾸지 않았어요.
 
 ## 의존성
 

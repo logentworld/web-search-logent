@@ -1,0 +1,9 @@
+{
+  "id": "com.sleepysoong.logent.web-search",
+  "key": "sleepysoong:web_search",
+  "name": "Web Search",
+  "entry": "com.sleepysoong.logent.websearch.WebSearchPlugin",
+  "dependencies": [],
+  "apiMin": 4,
+  "apiMax": 4
+}

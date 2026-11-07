@@ -162,6 +162,8 @@ jobs:
           fi
           while IFS= read -r old; do
             case "$old" in
+              "logent-web-search-v$(cat VERSION).lpg")
+                continue ;;
               *.lpg|SHA256SUMS.edge|SHA256SUMS-edge-*.txt)
                 gh release delete-asset "$release" "$old" -y ;;
             esac
